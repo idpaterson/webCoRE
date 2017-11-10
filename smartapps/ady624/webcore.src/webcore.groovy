@@ -1677,22 +1677,31 @@ private cleanUp() {
 
 private getStorageApp(install = false) {
 	def name = handle() + ' Storage'
+	debug 'getStorageApp'
 	def storageApp = getChildApps().find{ it.name == name }
     if (storageApp) {
+			debug 'found storage app'
     	if (app.label != storageApp.label) {
     		storageApp.updateLabel(app.label)
         }
     	return storageApp
     }
+		debug 'no storage app'
     if (!install) return null
+		debug 'installing storage app'
     try {
     	storageApp = addChildApp("ady624", name, app.label)
     } catch (all) {
     	error "Please install the webCoRE Storage SmartApp for better performance"
         return null
     }
+		debug 'installed storage app'
     try {
-    	storageApp.initData(settings.collect{ it.key.startsWith('dev:') ? it : null }, settings.contacts)
+			def devices = settings.collect{ it.key.startsWith('dev:') ? it : null }
+			debug "contacts $settings.contacts"
+			debug "devices $devices"
+    	storageApp.initData(devices, settings.contacts)
+			debug 'initialized storage app'
     	for (item in settings.collect{ it.key.startsWith('dev:') ? it : null }) {
         	if (item && item.key) {
             	app.updateSetting(item.key, [type: 'string', value: null])
