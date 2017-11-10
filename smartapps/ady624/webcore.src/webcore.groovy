@@ -1683,7 +1683,9 @@ private getStorageApp(install = false) {
     if (storageApp) {
 			debug 'found storage app'
     	if (app.label != storageApp.label) {
+				debug 'updating label'
     		storageApp.updateLabel(app.label)
+				debug 'updated label'
         }
     	return storageApp
     }
@@ -1769,7 +1771,10 @@ public Map listAvailableDevices(raw = false, updateCache = false) {
 private Map listAvailableContacts(raw = false, updateCache = false) {
 	debug 'getting storage app'
 	def storageApp = getStorageApp()
-    if (storageApp) return storageApp.listAvailableContacts(raw)
+    if (storageApp) {
+			debug 'got storage app'
+			return storageApp.listAvailableContacts(raw)
+		}
 		debug 'no storage app'
     def contacts = [:]
 		debug 'iterating contacts'

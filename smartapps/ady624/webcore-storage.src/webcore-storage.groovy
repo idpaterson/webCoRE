@@ -180,7 +180,7 @@ def Map getDashboardData() {
 
 def Map listAvailableContacts(raw = false) {
     def contacts = [:]
-		log.debug 'iterating contacts in storage app'
+		log.debug 'iterating contacts in the storage app'
 		for(contact in settings.contacts) {
 				log.debug "found a contact: $contact"
         def contactId = hashId(contact.id);
