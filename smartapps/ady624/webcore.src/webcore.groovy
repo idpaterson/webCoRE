@@ -927,6 +927,7 @@ private api_get_base_result(deviceVersion = 0, updateCache = false) {
 	def Boolean sendDevices = (deviceVersion != currentDeviceVersion)
     def name = handle() + ' Piston'
     def incidentThreshold = now() - 604800000
+		
     debug 'api_get_base_result'
 		def account = [id: hashId(hubUID ?: app.getAccountId(), updateCache)]
 		debug 'got account'
