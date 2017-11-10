@@ -927,11 +927,31 @@ private api_get_base_result(deviceVersion = 0, updateCache = false) {
 	def Boolean sendDevices = (deviceVersion != currentDeviceVersion)
     def name = handle() + ' Piston'
     def incidentThreshold = now() - 604800000
-		return [
+    debug 'api_get_base_result'
+		def account = [id: hashId(hubUID ?: app.getAccountId(), updateCache)]
+		debug 'got account'
+		def pistons = getChildApps().findAll{ it.name == name }.sort{ it.label }.collect{ [ id: hashId(it.id, updateCache), 'name': it.label, 'meta': state[hashId(it.id, updateCache)] ] }
+		debug 'got pistons'
+		def virtualDevices = virtualDevices(updateCache)
+		debug 'got virtual devices'
+		def globalVars = listAvailableVariables()
+		debug 'got global vars'
+		def contacts = listAvailableContacts(false, updateCache)
+		debug 'got contacts'
+		def devices = listAvailableDevices(false, updateCache)
+		debug 'got devices'
+		def hubs = location.getHubs().collect{ [id: hashId(it.id, updateCache), name: it.name, firmware: hubUID ? 'unknown' : it.getFirmwareVersionString(), physical: it.getType().toString().contains('PHYSICAL'), powerSource: it.isBatteryInUse() ? 'battery' : 'mains' ]}
+		debug 'got hubs'
+		def incidents = hubUID ? [] : location.activeIncidents.collect{[date: it.date.time, title: it.getTitle(), message: it.getMessage(), args: it.getMessageArgs(), sourceType: it.getSourceType()]}.findAll{ it.date >= incidentThreshold }
+		debug 'got incidents'
+		def modes = location.getModes().collect{ [id: hashId(it.id, updateCache), name: it.name ]}
+		debug 'got modes'
+
+		def result = [
 			name: location.name + ' \\ ' + (app.label ?: app.name),
 			instance: [
-				account: [id: hashId(hubUID ?: app.getAccountId(), updateCache)],
-				pistons: getChildApps().findAll{ it.name == name }.sort{ it.label }.collect{ [ id: hashId(it.id, updateCache), 'name': it.label, 'meta': state[hashId(it.id, updateCache)] ] },
+				account: account,
+				pistons: pistons,
 				id: hashId(app.id, updateCache),
 				locationId: hashId(location.id, updateCache),
 				name: app.label ?: app.name,
@@ -941,16 +961,16 @@ private api_get_base_result(deviceVersion = 0, updateCache = false) {
 				enabled: !settings.disabled,
 				settings: state.settings ?: [:],
 				lifx: state.lifx ?: [:],
-				virtualDevices: virtualDevices(updateCache),
-				globalVars: listAvailableVariables(),
-			] + (sendDevices ? [contacts: listAvailableContacts(false, updateCache), devices: listAvailableDevices(false, updateCache)] : [:]),
+				virtualDevices: virtualDevices,
+				globalVars: globalVars,
+			] + (sendDevices ? [contacts: contacts, devices: devices] : [:]),
 			location: [
 				contactBookEnabled: location.getContactBookEnabled(),
-				hubs: location.getHubs().collect{ [id: hashId(it.id, updateCache), name: it.name, firmware: hubUID ? 'unknown' : it.getFirmwareVersionString(), physical: it.getType().toString().contains('PHYSICAL'), powerSource: it.isBatteryInUse() ? 'battery' : 'mains' ]},
-				incidents: hubUID ? [] : location.activeIncidents.collect{[date: it.date.time, title: it.getTitle(), message: it.getMessage(), args: it.getMessageArgs(), sourceType: it.getSourceType()]}.findAll{ it.date >= incidentThreshold },
+				hubs: hubs,
+				incidents: incidents,
 				id: hashId(location.id, updateCache),
 				mode: hashId(location.getCurrentMode().id, updateCache),
-				modes: location.getModes().collect{ [id: hashId(it.id, updateCache), name: it.name ]},
+				modes: modes,
 				shm: hubUID ? 'off' : location.currentState("alarmSystemStatus")?.value,
 				name: location.name,
 				temperatureScale: location.getTemperatureScale(),
@@ -963,6 +983,9 @@ private api_get_base_result(deviceVersion = 0, updateCache = false) {
 			],
 			now: now(),
 		]
+		debug 'composed result'
+
+		return result
 }
 
 private api_intf_dashboard_load() {
