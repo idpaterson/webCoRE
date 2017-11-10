@@ -21,6 +21,7 @@ public static String version() { return "v0.2.0fe.20171109" }
 /*** webCoRE DEFINITION														***/
 /******************************************************************************/
 private static String handle() { return "webCoRE" }
+log.debug 'A'
 definition(
 	name: "${handle()} Storage",
 	namespace: "ady624",
@@ -33,13 +34,19 @@ definition(
 	iconX2Url: "https://cdn.rawgit.com/ady624/${handle()}/master/resources/icons/app-CoRE@2x.png",
 	iconX3Url: "https://cdn.rawgit.com/ady624/${handle()}/master/resources/icons/app-CoRE@3x.png"
 )
+log.debug 'B'
 
 preferences {
+	log.debug 'C.1'
 	//UI pages
 	page(name: "pageSettings")
+	log.debug 'C.2'
 	page(name: "pageSelectDevices")
+	log.debug 'C.3'
 	page(name: "pageSelectContacts")
+	log.debug 'C.4'
 }
+
 
 
 /******************************************************************************/
@@ -48,6 +55,7 @@ preferences {
 /*** 																		***/
 /******************************************************************************/
 def pageSettings() {
+	log.debug 'D'
     //clear devices cache
 	dynamicPage(name: "pageSettings", title: "", install: false, uninstall: false) {
         if (!parent || !parent.isInstalled()) {
@@ -74,6 +82,7 @@ def pageSettings() {
 	}
 }
 private pageSelectDevices() {
+	log.debug 'E'
 	parent.refreshDevices()
 	dynamicPage(name: "pageSelectDevices", title: "") {
 		section() {
@@ -99,6 +108,7 @@ private pageSelectDevices() {
 }
 
 private pageSelectContacts() {
+	log.debug 'F'
 	parent.refreshDevices()
 	dynamicPage(name: "pageSelectContacts", title: "") {
 		section() {
@@ -120,17 +130,20 @@ private pageSelectContacts() {
 
 
 private installed() {
+	log.debug 'G'
 	initialize()
 	return true
 }
 
 private updated() {
+	log.debug 'H'
 	unsubscribe()
 	initialize()
 	return true
 }
 
 private initialize() {
+	log.debug 'I'
 	//update parent
     parent.refreshDevices()
 }
@@ -143,6 +156,7 @@ private initialize() {
 /******************************************************************************/
 
 def initData(devices, contacts) {
+	log.debug 'J'
     if (devices) {
 		for(item in devices) {
 	    	if (item) {
