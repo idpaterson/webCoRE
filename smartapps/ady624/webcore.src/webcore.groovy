@@ -927,7 +927,7 @@ private api_get_base_result(deviceVersion = 0, updateCache = false) {
 	def Boolean sendDevices = (deviceVersion != currentDeviceVersion)
     def name = handle() + ' Piston'
     def incidentThreshold = now() - 604800000
-		
+
     debug 'api_get_base_result'
 		def account = [id: hashId(hubUID ?: app.getAccountId(), updateCache)]
 		debug 'got account'
@@ -1757,10 +1757,14 @@ public Map listAvailableDevices(raw = false, updateCache = false) {
 }
 
 private Map listAvailableContacts(raw = false, updateCache = false) {
+	debug 'getting storage app'
 	def storageApp = getStorageApp()
     if (storageApp) return storageApp.listAvailableContacts(raw)
+		debug 'no storage app'
     def contacts = [:]
+		debug 'iterating contacts'
     for(contact in settings.contacts) {
+				debug "found a contact: $contact"
         def contactId = hashId(contact.id, updateCache);
         if (raw) {
             contacts[contactId] = contact
@@ -1768,6 +1772,7 @@ private Map listAvailableContacts(raw = false, updateCache = false) {
             contacts[contactId] = [t: contact.name, f: contact.contact.firstName, l: contact.contact.lastName, p: "$contact".endsWith('PUSH')]
         }
     }
+		debug 'listed contacts'
     return contacts
 }
 

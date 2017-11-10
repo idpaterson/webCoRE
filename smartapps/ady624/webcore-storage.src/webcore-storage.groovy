@@ -180,14 +180,20 @@ def Map getDashboardData() {
 
 def Map listAvailableContacts(raw = false) {
     def contacts = [:]
-    for(contact in settings.contacts) {
+		log.debug 'iterating contacts in storage app'
+		for(contact in settings.contacts) {
+				log.debug "found a contact: $contact"
         def contactId = hashId(contact.id);
         if (raw) {
             contacts[contactId] = contact
         } else {
+					log.debug "name: $contact.name"
+					log.debug "firstName: $contact.contact.firstName"
+					log.debug "lastName: $contact.contact.lastName"
             contacts[contactId] = [t: contact.name, f: contact.contact.firstName, l: contact.contact.lastName, p: "$contact".endsWith('PUSH')]
         }
     }
+		log.debug 'listed contacts'
     return contacts
 }
 
