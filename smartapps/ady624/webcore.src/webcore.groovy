@@ -1676,6 +1676,7 @@ private cleanUp() {
 }
 
 private getStorageApp(install = false) {
+	return null;
 	def name = handle() + ' Storage'
 	debug 'getStorageApp'
 	def storageApp = getChildApps().find{ it.name == name }
@@ -1778,6 +1779,9 @@ private Map listAvailableContacts(raw = false, updateCache = false) {
         if (raw) {
             contacts[contactId] = contact
         } else {
+						log.debug "name: $contact.name"
+						log.debug "firstName: $contact.contact.firstName"
+						log.debug "lastName: $contact.contact.lastName"
             contacts[contactId] = [t: contact.name, f: contact.contact.firstName, l: contact.contact.lastName, p: "$contact".endsWith('PUSH')]
         }
     }
