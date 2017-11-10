@@ -1676,7 +1676,6 @@ private cleanUp() {
 }
 
 private getStorageApp(install = false) {
-	return null;
 	def name = handle() + ' Storage'
 	debug 'getStorageApp'
 	def storageApp = getChildApps().find{ it.name == name }
