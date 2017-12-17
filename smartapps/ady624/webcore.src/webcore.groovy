@@ -842,7 +842,7 @@ private initialize() {
 
 private initializeWebCoREEndpoint() {
 	try {
-        if (!state.endpoint) {
+        if (!state.endpoint || !state.endpoint.contains(apiServerUrl(""))) {
             try {
                 def accessToken = createAccessToken()
                 if (accessToken) {
