@@ -800,6 +800,10 @@ config.factory('dataService', ['$http', '$location', '$rootScope', '$window', '$
 				data.accessToken = si.accessToken;
 				return data;	
 			}, function(response) {
+				if (confirm('There was an error loading the dashboard, would you like to log out and try again?')) {
+					dataService.logout();
+					$location.path('/register');
+				}
 			});
     };
 
