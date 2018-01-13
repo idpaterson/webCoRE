@@ -969,6 +969,7 @@ private api_get_base_result(deviceVersion = 0, updateCache = false) {
 }
 
 private api_intf_dashboard_load() {
+try {
 	def result
     recoveryHandler()
     //install storage app
@@ -995,9 +996,11 @@ private api_intf_dashboard_load() {
     //for accuracy, use the time as close as possible to the render
     result.now = now()
 	render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_refresh() {
+try {
     startDashboard()
 	def result
 	if (verifySecurityToken(params.token)) {
@@ -1009,9 +1012,11 @@ private api_intf_dashboard_refresh() {
     //for accuracy, use the time as close as possible to the render
     result.now = now()
 	render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_new() {
+try {
 	def result
     debug "Dashboard: Request received to generate a new piston name"
 	if (verifySecurityToken(params.token)) {
@@ -1020,9 +1025,11 @@ private api_intf_dashboard_piston_new() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_create() {
+try {
 	def result
     debug "Dashboard: Request received to generate a new piston name"
 	if (verifySecurityToken(params.token)) {
@@ -1036,9 +1043,11 @@ private api_intf_dashboard_piston_create() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_get() {
+try {
 	def result
     debug "Dashboard: Request received to get piston ${params?.id}"
 	if (verifySecurityToken(params.token)) {
@@ -1077,10 +1086,12 @@ private api_intf_dashboard_piston_get() {
     //for accuracy, use the time as close as possible to the render
     result.now = now()
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 
 private api_intf_dashboard_piston_backup() {
+try {
 	def result = [pistons: []]
     debug "Dashboard: Request received to backup pistons ${params?.id}"
 	if (verifySecurityToken(params.token)) {
@@ -1101,6 +1112,7 @@ private api_intf_dashboard_piston_backup() {
     //for accuracy, use the time as close as possible to the render
     result.now = now()
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private decodeEmoji(value) {
@@ -1110,6 +1122,7 @@ private decodeEmoji(value) {
 
 
 private api_intf_dashboard_piston_set_save(id, data, chunks) {
+try {
     def piston = getChildApps().find{ hashId(it.id) == id };
     if (piston) {
     /*
@@ -1127,10 +1140,12 @@ private api_intf_dashboard_piston_set_save(id, data, chunks) {
         return result
     }
     return false;
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 //set is used for small pistons, for large data, using set.start, set.chunk, and set.end
 private api_intf_dashboard_piston_set() {
+try {
 	def result
     debug "Dashboard: Request received to set a piston"
 	if (verifySecurityToken(params.token)) {
@@ -1150,9 +1165,11 @@ private api_intf_dashboard_piston_set() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_set_start() {
+try {
 	def result
     debug "Dashboard: Request received to set a piston (chunked start)"
 	if (verifySecurityToken(params.token)) {
@@ -1169,9 +1186,11 @@ private api_intf_dashboard_piston_set_start() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_set_chunk() {
+try {
 	def result
     def chunk = "${params?.chunk}"
     chunk = chunk.isInteger() ? chunk.toInteger() : -1
@@ -1190,9 +1209,11 @@ private api_intf_dashboard_piston_set_chunk() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_set_end() {
+try {
 	def result
     debug "Dashboard: Request received to set a piston (chunked end)"
 	if (verifySecurityToken(params.token)) {
@@ -1236,9 +1257,11 @@ private api_intf_dashboard_piston_set_end() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_pause() {
+try {
 	def result
     debug "Dashboard: Request received to pause a piston"
 	if (verifySecurityToken(params.token)) {
@@ -1256,9 +1279,11 @@ private api_intf_dashboard_piston_pause() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_resume() {
+try {
 	def result
     debug "Dashboard: Request received to resume a piston"
 	if (verifySecurityToken(params.token)) {
@@ -1277,9 +1302,11 @@ private api_intf_dashboard_piston_resume() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_test() {
+try {
 	def result
     debug "Dashboard: Request received to test a piston"
 	if (verifySecurityToken(params.token)) {
@@ -1294,9 +1321,11 @@ private api_intf_dashboard_piston_test() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_presence_create() {
+try {
 	def result
 	if (verifySecurityToken(params.token)) {
         def dni = params.dni
@@ -1315,9 +1344,11 @@ private api_intf_dashboard_presence_create() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_tile() {
+try {
 	def result
     debug "Dashboard: Clicked a piston tile"
 	if (verifySecurityToken(params.token)) {
@@ -1332,9 +1363,11 @@ private api_intf_dashboard_piston_tile() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_set_bin() {
+try {
 	def result
     debug "Dashboard: Request received to set piston bin"
 	if (verifySecurityToken(params.token)) {
@@ -1349,11 +1382,13 @@ private api_intf_dashboard_piston_set_bin() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 
 
 private api_intf_dashboard_piston_set_category() {
+try {
 	def result
     debug "Dashboard: Request received to set piston logging level"
 	if (verifySecurityToken(params.token)) {
@@ -1373,9 +1408,11 @@ private api_intf_dashboard_piston_set_category() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_logging() {
+try {
 	def result
     debug "Dashboard: Request received to set piston logging level"
 	if (verifySecurityToken(params.token)) {
@@ -1390,9 +1427,11 @@ private api_intf_dashboard_piston_logging() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_clear_logs() {
+try {
 	def result
     debug "Dashboard: Request received to clear piston logs"
 	if (verifySecurityToken(params.token)) {
@@ -1407,8 +1446,10 @@ private api_intf_dashboard_piston_clear_logs() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 private api_intf_dashboard_piston_delete() {
+try {
 	def result
     debug "Dashboard: Request received to delete a piston"
 	if (verifySecurityToken(params.token)) {
@@ -1426,31 +1467,39 @@ private api_intf_dashboard_piston_delete() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_location_entered() {
+try {
 	def deviceId = params.device
     def dni = params.dni
     def device = getChildDevices().find{ (it.getDeviceNetworkId() == dni) || (hashId(it.id) == deviceId) }
    	if (device && params.place) device.processEvent([name: 'entered', place: params.place, places: state.settings.places])
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_location_exited() {
+try {
 	def deviceId = params.device
     def dni = params.dni
     def device = getChildDevices().find{ (it.getDeviceNetworkId() == dni) || (hashId(it.id) == deviceId) }
    	if (device && params.place) device.processEvent([name: 'exited', place: params.place, places: state.settings.places])
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_location_updated() {
+try {
 	def deviceId = params.device
     def dni = params.dni
     def device = getChildDevices().find{ (it.getDeviceNetworkId() == dni) || (hashId(it.id) == deviceId) }
     Map location = params.location ? (LinkedHashMap) new groovy.json.JsonSlurper().parseText(params.location) : [error: "Invalid data"]
     if (device) device.processEvent([name: 'updated', location: location, places: state.settings.places])
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_variable_set() {
+try {
 	def result
     debug "Dashboard: Request received to set a variable"
 	if (verifySecurityToken(params.token)) {
@@ -1488,9 +1537,11 @@ private api_intf_variable_set() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_settings_set() {
+try {
 	def result
     debug "Dashboard: Request received to set settings"
 	if (verifySecurityToken(params.token)) {
@@ -1502,9 +1553,11 @@ private api_intf_settings_set() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_evaluate() {
+try {
 	def result
     debug "Dashboard: Request received to evaluate an expression"
 	if (verifySecurityToken(params.token)) {
@@ -1521,9 +1574,11 @@ private api_intf_dashboard_piston_evaluate() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 private api_intf_dashboard_piston_activity() {
+try {
 	def result
 	if (verifySecurityToken(params.token)) {
 	    def piston = getChildApps().find{ hashId(it.id) == params.id };
@@ -1536,6 +1591,7 @@ private api_intf_dashboard_piston_activity() {
     	result = api_get_error_result("ERR_INVALID_TOKEN")
     }
     render contentType: "application/javascript;charset=utf-8", data: "${params.callback}(${groovy.json.JsonOutput.toJson(result)})"
+} catch (e) { error "Error generating response", 0, e; throw e }
 }
 
 def api_ifttt() {
