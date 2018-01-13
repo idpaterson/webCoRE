@@ -2333,7 +2333,14 @@ private debug(message, shift = null, err = null, cmd = null) {
 	} else if (cmd == "warn") {
 		log.warn "$prefix$message", err
 	} else if (cmd == "error") {
-      if (hubUID) { log.error "$prefix$message" } else { log.error "$prefix$message", err }
+		def line = ""
+		if (err) {
+			def errData = new groovy.json.JsonSlurper().parseText(groovy.json.JsonOutput.toJson(err ?: [ stackTrace: [] ]))
+			def frame = errData.stackTrace.find{ it.fileName && it.fileName.contains('webCoRE') }
+			line = frame?.lineNumber ? " @ line ${frame.lineNumber}" : ""
+		}
+		if (hubUID) { log.error "$prefix$message$line" } else { log.error "$prefix$message$line", err }
+		pause(200)
 	} else {
 		log.debug "$prefix$message", err
 	}
