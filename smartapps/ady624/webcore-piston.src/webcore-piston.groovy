@@ -18,8 +18,11 @@
  *
  *  Version history
 */
-public static String version() { return "v0.2.101.20171227" }
+public static String version() { return "v0.3.104.20180323" }
 /*
+ *	03/23/2018 >>> v0.3.104.20180323 - BETA M3 - Fixed unexpected dashboard logouts, updating image urls in tiles, 12 am/pm in time(), unary negation following another operator
+ *	02/24/2018 >>> v0.3.000.20180224 - BETA M3 - Dashboard redesign by @acd37, collapsible sidebar, fix "was" conditions on decimal attributes and log failures due to duration threshold
+ *	01/16/2018 >>> v0.2.102.20180116 - BETA M2 - Fixed IE 11 script error, display of offset expression evaluation, blank device lists on piston restore, avoid error and log a warning when ST sunrise/sunset is blank
  *	12/27/2017 >>> v0.2.101.20171227 - BETA M2 - Fixed 172.x.x.x web requests thanks to @tbam, fixed array subscripting with 0.0 decimal value as in a for loop using $index
  *	12/11/2017 >>> v0.2.100.20171211 - BETA M2 - Replaced the scheduler-based timeout recovery handling to ease up on resource usage
  *	11/29/2017 >>> v0.2.0ff.20171129 - BETA M2 - Fixed missing conditions and triggers for several device attributes, new comparison group for binary files
@@ -4048,11 +4051,13 @@ private boolean valueWas(rtData, comparisonValue, rightValue, rightValue2, timeV
     def result = true
     long duration = 0
     for (state in states) {
-    	if (!("comp_$func"(rtData, [i: comparisonValue.i, v: [t: comparisonValue.v.t, v: state.value]], rightValue, rightValue2, timeValue))) break
+    	if (!("comp_$func"(rtData, [i: comparisonValue.i, v: [t: comparisonValue.v.t, v: cast(rtData, state.value, comparisonValue.v.t)]], rightValue, rightValue2, timeValue))) break
         duration += state.duration
     }
     if (!duration) return false
-    return (timeValue.f == 'l') ? duration < threshold : duration >= threshold
+    result = (timeValue.f == 'l') ? duration < threshold : duration >= threshold
+    debug "Duration ${duration}ms for ${func.replace('is_', 'was_')} ${timeValue.f == 'l' ? '<' : '>='} ${threshold}ms threshold = ${result}", rtData
+    return result
 }
 
 private boolean valueChanged(rtData, comparisonValue, timeValue) {
@@ -5375,9 +5380,9 @@ private Map evaluateExpression(rtData, expression, dataType = null) {
                 }
 	           	//order of operations :D
                 idx = 0
-                //#2 	 !   !!   ~ 	Logical negation, logical double-negation and bitwise NOT unary operators
+                //#2 	 !   !!   ~   - 	Logical negation, logical double-negation, bitwise NOT, and numeric negation unary operators
                 for (item in items) {
-                	if (((item.o) == '!') || ((item.o) == '!!') || ((item.o) == '~')) break;
+                	if (((item.o) == '!') || ((item.o) == '!!') || ((item.o) == '~') || (item.t == null && item.o == '-')) break;
                     secondary = true
                     idx++
                 }
@@ -7449,7 +7454,10 @@ private localToUtcTime(dateOrTimeOrString) {
                     }
                     long time = timeToday(dateOrTimeOrString, tz).getTime()
                     //adjust for PM - timeToday has no clue....
-                    if (dateOrTimeOrString.trim().toLowerCase().endsWith('pm')) time += 43200000
+                    dateOrTimeOrString = dateOrTimeOrString.trim().toLowerCase()
+                    def twelve = dateOrTimeOrString.startsWith('12')
+                    if (twelve && dateOrTimeOrString.endsWith('am')) time -= 43200000
+                    if (!twelve && dateOrTimeOrString.endsWith('pm')) time += 43200000
                     return time
                 } catch (all3) {
                     return (new Date()).getTime()
@@ -7701,6 +7709,11 @@ private initSunriseAndSunset(rtData) {
     def rightNow = localTime()
     if (!rtData.sunTimes) {
     	def sunTimes = app.getSunriseAndSunset()
+        if (!sunTimes.sunrise) {
+            warn "Actual sunrise and sunset times are unavailable; please reset the location for your hub", rtData
+            sunTimes.sunrise = new Date(getMidnightTime() + 7 * 3600000)
+            sunTimes.sunset = new Date(getMidnightTime() + 19 * 3600000)
+        }
         rtData.sunTimes = [
     		sunrise: sunTimes.sunrise.time,
     		sunset: sunTimes.sunset.time,

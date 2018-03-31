@@ -18,6 +18,8 @@ config.controller('dashboard', ['$scope', '$rootScope', 'dataService', '$timeout
 	$scope.view = 'piston';
 	$scope.isAppHosted = !!window.BridgeCommander;
 	$scope.hostDeviceId = '';
+	$scope.sidebarCollapsed = dataService.isCollapsed('dashboardSidebar');
+	$scope.completedInitialRender = false;
 
 	$scope.init = function(instance, uri, pin) {
 		//if (!instance) instance = dataService.getInstance();
@@ -47,6 +49,7 @@ config.controller('dashboard', ['$scope', '$rootScope', 'dataService', '$timeout
 						$scope.instance = dataService.getInstance();
 						$scope.currentInstanceId = $scope.instance.id;
 						$scope.instanceCount = dataService.getInstanceCount();
+						$scope.sidebarCollapsed = dataService.isCollapsed('dashboardSidebar');
     		            if (!$scope.devices) $scope.devices = $scope.listAvailableDevices();
 	    	            if (!$scope.virtualDevices) $scope.virtualDevices = $scope.listAvailableVirtualDevices();
 						window.scope = $scope;
@@ -82,12 +85,19 @@ config.controller('dashboard', ['$scope', '$rootScope', 'dataService', '$timeout
 						}
 						$scope.clock();
 						$scope.render();
+						$timeout(function() {
+							$scope.completedInitialRender = true;
+						});
 					}
 				} else {
 					$scope.dialogDeleteInstance(instance);
 				}
 			}, function(data) {
+				$scope.initialized = true;
 				$scope.render();
+				$timeout(function() {
+					$scope.completedInitialRender = true;
+				});
 			});
 	};
 
@@ -117,12 +127,12 @@ config.controller('dashboard', ['$scope', '$rootScope', 'dataService', '$timeout
 		var parent = img.parentElement; while(parent) { if (parent.tagName.toLowerCase() == 'viewer') { found = true; break; };  parent = parent.parentElement; }
 		if (!found) return;
 		var src = img.osrc;
-		if (!src) {
+		var tmr = '_img_refresh_token_'
+		if (!src || img.src.indexOf(tmr) < 0) {
 			src = img.src;
 			img.osrc = src;
 		}
-		if (!src && (src.startsWith('{')) && (src.startsWith('%7B'))) return;
-		var tmr = '_img_refresh_token_'
+		if (!src || src.startsWith('data:') || src.startsWith('{') || src.startsWith('%7B')) return;
 		var p = src.indexOf(tmr);
 		if (p > 0) {
 			src = src.substr(0, p) + tmr + '=' + (new Date()).getTime();
@@ -815,7 +825,8 @@ config.controller('dashboard', ['$scope', '$rootScope', 'dataService', '$timeout
 
 	$scope.initAds = function() {
 	    if ($scope.isAppHosted) return;
-	    window.adsbygoogle = (window.adsbygoogle || []).push({google_ad_client: "ca-pub-4643048739403893", enable_page_level_ads: true});
+	    window.adsbygoogle = (window.adsbygoogle || []);
+	    window.adsbygoogle.push({google_ad_client: "ca-pub-4643048739403893", enable_page_level_ads: true});
 	}
 
 	$scope.authenticate = function() {
@@ -1134,6 +1145,10 @@ config.controller('dashboard', ['$scope', '$rootScope', 'dataService', '$timeout
 	$scope.initSocialMedia = function() {
 		$window.FB.XFBML.parse();
 	};
+	
+	$scope.toggleSidebar = function() {
+		$scope.sidebarCollapsed = !$scope.sidebarCollapsed;
+	}
 
 
     //init
