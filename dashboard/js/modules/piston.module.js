@@ -2981,7 +2981,7 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 		return today;
 	};
 
-	$scope.validateOperand = function(operand, reinit, managed) {
+	$scope.validateOperand = function(operand, reinit, managed, parentOperand) {
 		if (!!$scope.designer.comparison && !managed) {
 			$scope.validateComparison($scope.designer.comparison, reinit);
 			return;
@@ -2996,6 +2996,7 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 			operand.data.v = operand.data.v || '';
 			operand.data.e = operand.data.e || '';
 			operand.data.x = operand.data.x || '';
+			operand.data.k = operand.data.k || [];
 			operand.data.d = operand.data.d || [];
 			operand.data.g = operand.data.g || (operand.multiple ? 'any' : 'avg');
 			operand.data.f = operand.data.f || 'l';
@@ -3062,6 +3063,18 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 			if (dataType == 'bool') dataType = 'boolean';
 			if ((dataType == 'enum') && !operand.options && !operand.options.length) {
 				dataType = 'string';
+			}
+			if (dataType == 'kv') {
+				operand.data.t = 'k';
+				operand.data.k = operand.data.k || [];
+				if (operand.data.k.length === 0) {
+					operand.data.k.push({});
+				}
+				for (var i in operand.data.k) {
+					var pair = operand.data.k[i];
+					pair.k = pair.k || {};
+					pair.v = pair.v || {};
+				}
 			}
 	
 			//if (dataType != 'enum') operand.options = null;
@@ -3378,6 +3391,7 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 			((operand.data.t=='p') && !!operand.data.d && !!operand.data.d.length && !!operand.data.a) ||
 			((operand.data.t=='v') && !!operand.data.v) ||
 			((operand.data.t=='x') && !!operand.data.x && !!operand.data.x.length) ||
+			((operand.data.t=='k') && !!operand.data.k) ||
 			((operand.data.t=='s') && !!operand.data.s) ||
 			((operand.data.t=='u') && !!operand.data.u) ||
 			((operand.data.t=='c') && !((operand.data.c == "Invalid Date") && (operand.data.c instanceof Object)) && !((dataType == 'duration') && (isNaN(operand.data.c) || (operand.requirePositiveNumber && (operand.data.c < 1))))) ||
@@ -3410,6 +3424,11 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 			operand.linkedOperand.dataType = operand.selectedDataType;
 			operand.linkedOperand.options = operand.selectedOptions;
 			$scope.validateOperand(operand.linkedOperand, true);
+			$scope.refreshSelects();
+		}
+
+		if (parentOperand) {
+			$scope.validateOperand(parentOperand, true);
 			$scope.refreshSelects();
 		}
 	};
@@ -3657,6 +3676,15 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 					case 'x': //variable
 						if (operand.x)
 							result = '<span var>{' + operand.x + ($scope.getLocalVariableType(operand.x).endsWith(']') ? '[' + operand.xi + ']' : '') + '}</span>';
+						break;
+					case 'k': //key value pairs
+						var pairs = [];
+						for (var i in operand.k) {
+							var pair = operand.k[i];
+							pairs.push($scope.renderOperand(pair.k.data, noQuotes, pedantic, noNegatives, grouping) + ': ' + 
+								$scope.renderOperand(pair.v.data, noQuotes, pedantic, noNegatives, grouping));
+						}
+						result = '<span kv>{' + pairs.join(', ') + '}</span>'
 						break;
 					case 'c': //constant
 						var m = 'num';
