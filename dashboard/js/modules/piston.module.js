@@ -1887,6 +1887,13 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 							param.c = param.c instanceof Date ? param.c.getTime() : (new Date(param.c)).getTime();
 							break;
 					}
+				} else if (param.t == 'k') {
+					for (var i in param.k) {
+						if (param.k[i].k) {
+							param.k[i].k = param.k[i].k.data;
+							param.k[i].v = param.k[i].v.data;
+						}
+					}
 				}
 				task.p.push(param);
 			}
@@ -3072,8 +3079,16 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 				}
 				for (var i in operand.data.k) {
 					var pair = operand.data.k[i];
-					pair.k = pair.k || {};
-					pair.v = pair.v || {};
+					if (!pair.k || !pair.k.data) {
+						pair.k = {
+							data: (pair.k && pair.k.data) || pair.k || {}
+						};
+					}
+					if (!pair.v || !pair.v.data) {
+						pair.v = {
+							data: (pair.v && pair.v.data) || pair.v || {}
+						};
+					}
 				}
 			}
 	
@@ -3681,8 +3696,8 @@ config.controller('piston', ['$scope', '$rootScope', 'dataService', '$timeout', 
 						var pairs = [];
 						for (var i in operand.k) {
 							var pair = operand.k[i];
-							pairs.push($scope.renderOperand(pair.k.data, noQuotes, pedantic, noNegatives, grouping) + ': ' + 
-								$scope.renderOperand(pair.v.data, noQuotes, pedantic, noNegatives, grouping));
+							pairs.push($scope.renderOperand(pair.k, noQuotes, pedantic, noNegatives, grouping) + ': ' + 
+								$scope.renderOperand(pair.v, noQuotes, pedantic, noNegatives, grouping));
 						}
 						result = '<span kv>{' + pairs.join(', ') + '}</span>'
 						break;

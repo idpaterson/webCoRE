@@ -1896,7 +1896,7 @@
 							<operand ng-model="pair.v" ng-include="'operand'" class="kv-field kv-value"></operand>
 						</div>
 					</div>
-					<a ng-click="operand.data.k.push({}); validateOperand(operand)"><i class="fa fa-plus"></i> Add</a>
+					<a ng-click="operand.data.k.push({}); validateOperand(operand); refreshSelects()"><i class="fa fa-plus"></i> Add</a>
 				</div>
 				<!-- constant -->
 				<div class="form-table input-group pull-left" ng-if="(operand.data.t=='x') && (!operand.multiple) && getLocalVariableType(operand.data.x).endsWith(']')" style="width:25%">
