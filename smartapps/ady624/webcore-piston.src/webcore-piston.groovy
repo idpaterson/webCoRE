@@ -1609,6 +1609,9 @@ private Boolean executeTask(rtData, devices, statement, task, async) {
         	case 'variable':
             	p = param.x instanceof List ? param.x : (param.x + (param.xi != null ? '[' + param.xi + ']' : ''));
                 break;
+        	case 'kv':
+            	p = param.k.collectEntries{ [ (evaluateOperand(rtData, null, it.k).v): evaluateOperand(rtData, null, it.v).v] }
+                break;
             default:
             	def v = evaluateOperand(rtData, null, param)
                 //if not selected, we want to return null
