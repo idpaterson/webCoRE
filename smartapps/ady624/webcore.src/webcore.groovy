@@ -291,7 +291,7 @@ private static String domain() { return "webcore.co" }
 include 'asynchttp_v1'
 definition(
 	name: "${handle()}",
-	namespace: "ady624",
+	namespace: "idpaterson",
 	author: "Adrian Caramaliu",
 	description: "Tap here to install ${handle()} ${version()}",
 	category: "Convenience",

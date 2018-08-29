@@ -291,11 +291,11 @@ private static String handle() { return "webCoRE-staging" }
 include 'asynchttp_v1'
 definition(
     name: "${handle()} Piston",
-    namespace: "ady624",
+    namespace: "idpaterson",
     author: "Adrian Caramaliu",
     description: "Do not install this directly, use webCoRE instead",
     category: "Convenience",
-	parent: "ady624:${handle()}",
+	parent: "idpaterson:${handle()}",
     /* icons courtesy of @chauger - thank you */
 	iconUrl: "https://cdn.rawgit.com/ady624/webCoRE/master/resources/icons/app-CoRE.png",
 	iconX2Url: "https://cdn.rawgit.com/ady624/webCoRE/master/resources/icons/app-CoRE@2x.png",
