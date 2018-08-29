@@ -23,10 +23,10 @@ public static String version() { return "v0.3.107.20180806" }
 private static String handle() { return "webCoRE-staging" }
 definition(
 	name: "${handle()} Storage",
-	namespace: "idpaterson",
+	namespace: "ady624",
 	author: "Adrian Caramaliu",
 	description: "Do not install this directly, use webCoRE instead",
-	parent: "idpaterson:${handle()}",
+	parent: "ady624:${handle()}",
 	category: "Convenience",
     /* icons courtesy of @chauger - thank you */
 	iconUrl: "https://cdn.rawgit.com/ady624/${handle()}/master/resources/icons/app-CoRE.png",
