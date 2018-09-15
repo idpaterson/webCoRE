@@ -157,6 +157,7 @@ def Map listAvailableDevices(raw = false) {
 				log.debug "Loaded ${results.size()} devices"
 			} catch (e) {
 				log.error "Failed to load devices", e
+				throw e
 			}
 	}
 }
