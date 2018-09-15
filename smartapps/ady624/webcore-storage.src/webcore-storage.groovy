@@ -133,33 +133,34 @@ def initData(devices, contacts) {
 }
 
 def Map listAvailableDevices(raw = false) {
-	if (raw) {
-    	return settings.findAll{ it.key.startsWith("dev:") }.collect{ it.value }.flatten().collectEntries{ dev -> [(hashId(dev.id)): dev]}
-    } else {
-			try { 
-	    	def results = settings.findAll{ it.key.startsWith("dev:") }.collect{ it.value }.flatten().collectEntries{ dev -> [(hashId(dev.id)): dev]}.collectEntries{ id, dev -> [ (id): [ 
-					n: dev.getDisplayName(), 
-					cn: dev.getCapabilities()*.name, 
-					a: dev.getSupportedAttributes().unique{ it.name }.collect{
-						def x = [
-							n: it.name, 
-							t: it.getDataType(), 
-							o: it.getValues()
-						]
-						try {x.v = dev.currentValue(x.n);} catch(all) {}
-						x
-					}, 
-					c: dev.getSupportedCommands().unique{ it.getName() }.collect{[
-						n: it.getName(), 
-						p: it.getArguments()
-					]} 
-				]]}
-				log.debug "Loaded ${results.size()} devices"
-			} catch (e) {
-				log.error "Failed to load devices", e
-				throw e
-			}
-	}
+	try { 
+        if (raw) {
+            return settings.findAll{ it.key.startsWith("dev:") }.collect{ it.value }.flatten().collectEntries{ dev -> [(hashId(dev.id)): dev]}
+        } else {
+            def results = settings.findAll{ it.key.startsWith("dev:") }.collect{ it.value }.flatten().collectEntries{ dev -> [(hashId(dev.id)): dev]}.collectEntries{ id, dev -> [ (id): [ 
+                n: dev.getDisplayName(), 
+                cn: dev.getCapabilities()*.name, 
+                a: dev.getSupportedAttributes().unique{ it.name }.collect{
+                    def x = [
+                        n: it.name, 
+                        t: it.getDataType(), 
+                        o: it.getValues()
+                    ]
+                    try {x.v = dev.currentValue(x.n);} catch(all) {}
+                    x
+                }, 
+                c: dev.getSupportedCommands().unique{ it.getName() }.collect{[
+                    n: it.getName(), 
+                    p: it.getArguments()
+                ]} 
+            ]]}
+            log.debug "Loaded ${results.size()} devices"
+            return results
+        }
+    } catch (e) {
+        log.error "Failed to load ${raw ? 'raw' : ''} devices", e
+        throw e
+    }
 }
 
 def Map getDashboardData() {
