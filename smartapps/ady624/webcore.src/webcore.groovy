@@ -927,6 +927,7 @@ private api_get_base_result(updateCache = false) {
     def currentDeviceVersion = state.deviceVersion
     def name = handle() + ' Piston'
     def incidentThreshold = now() - 604800000
+	warn 'Incident lookup has been disabled, please revert changes to the webCoRE SmartApp once SmartThings errors are resolved'
 	return [
         name: location.name + ' \\ ' + (app.label ?: app.name),
         instance: [
@@ -947,7 +948,7 @@ private api_get_base_result(updateCache = false) {
         location: [
             contactBookEnabled: location.getContactBookEnabled(),
             hubs: location.getHubs().collect{ [id: hashId(it.id, updateCache), name: it.name, firmware: hubUID ? 'unknown' : it.getFirmwareVersionString(), physical: it.getType().toString().contains('PHYSICAL'), powerSource: it.isBatteryInUse() ? 'battery' : 'mains' ]},
-            incidents: hubUID ? [] : location.activeIncidents.collect{[date: it.date.time, title: it.getTitle(), message: it.getMessage(), args: it.getMessageArgs(), sourceType: it.getSourceType()]}.findAll{ it.date >= incidentThreshold },
+            //incidents: hubUID ? [] : location.activeIncidents.collect{[date: it.date.time, title: it.getTitle(), message: it.getMessage(), args: it.getMessageArgs(), sourceType: it.getSourceType()]}.findAll{ it.date >= incidentThreshold },
             id: hashId(location.id, updateCache),
             mode: hashId(location.getCurrentMode().id, updateCache),
             modes: location.getModes().collect{ [id: hashId(it.id, updateCache), name: it.name ]},
